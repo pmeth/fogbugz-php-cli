@@ -236,7 +236,15 @@ class Commands {
       $status = IO::getOrQuit('Enter the status from the list above:', "integer");
     }
 
+    $people = $this->fogbugz->listPeople();
+    foreach ($people->people->person as $person) {
+      echo '[' . $person->ixPerson . '] ' . $person->sFullName . "\n";
+    }
     $assignedto = IO::getOrQuit("Who should the case be assigned to:", "string");
+		$assign_field = 'sPersonAssignedTo';
+		if (is_numeric($assignedto)) {
+			$assign_field = 'ixPersonAssignedTo';
+		}
 
     echo 'Please supply a note (optional): ';
     $note = IO::read();
@@ -244,7 +252,7 @@ class Commands {
     $request = array(
       'ixStatus' => $status,
       'ixBug' => $case,
-      'sPersonAssignedTo' => $assignedto
+      $assign_field => $assignedto
     );
 
     if (!empty($note)) {
